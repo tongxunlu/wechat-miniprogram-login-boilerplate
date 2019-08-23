@@ -1,0 +1,5 @@
+<template name="foot">
+  <navigator class="page-foot" openType="reLaunch" url="/pages/home/home" hover-class="none">
+    <view>回到首页</view>
+  </navigator>
+</template>

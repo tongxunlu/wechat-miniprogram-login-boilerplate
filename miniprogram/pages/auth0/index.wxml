@@ -1,0 +1,22 @@
+
+<view wx:if="{{canIUse}}">
+    <view class='header'>
+        <image src='/images/welogo_black.png'></image>
+    </view>
+
+    <view class='content'>
+        <view>申请获取以下权限</view>
+        <text wx:if="{{!userInfo.nickName}}">获得你的公开信息(昵称，头像等)</text>
+        <text wx:if="{{userInfo.nickName && !userInfo.phoneNumber}}">获得你的手机号码</text>
+    </view>
+
+    <button wx:if="{{ !userInfo.nickName}}" class='bottom' type='primary' open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="bindGetUserInfoNew">
+        授权登录
+    </button>
+    <button wx:if="{{userInfo.nickName && !userInfo.phoneNumber}}" class='bottom' type='primary' plain='true' lang="zh_CN" open-type="getPhoneNumber"
+    bindgetphonenumber="bindGetPhoneNumber">
+        授权获取手机号
+    </button>
+</view>
+
+<view wx:else>请升级微信版本</view>
