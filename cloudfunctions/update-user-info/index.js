@@ -65,7 +65,8 @@ exports.main = async event => {
     message: "success",
     code: 0,
     data: {
-      ...event.user
+      ...event.user,
+      expireTime
     }
   };
 };

@@ -6,8 +6,8 @@ Page({
   db: null, // db instance
   data: {
     canIUse: wx.canIUse("button.open-type.getUserInfo"),
-    scope: "userInfo"
-    // scope: "phoneNumber"
+    // scope: "userInfo"
+    scope: "phoneNumber"
   },
 
   /**
@@ -72,23 +72,17 @@ Page({
     });
 
     try {
-      // const data = this.data.userInfo;
       const result = await wx.cloud.callFunction({
-        name: "user-login-register",
+        name: "update-user-encrypted-data",
         data: {
           encryptedData: e.detail.encryptedData,
-          iv: e.detail.iv //,
-          // user: {
-          //   nickName: data.nickName,
-          //   avatarUrl: data.avatarUrl,
-          //   gender: data.gender
-          // }
+          iv: e.detail.iv
         }
       });
       console.log(result);
 
       if (!result.result.code && result.result.data) {
-        app.setUserInfo(result.result.data);
+        app.updateLocalUserInfo(result.result.data);
       }
 
       wx.hideLoading();
@@ -114,6 +108,6 @@ Page({
         }
       });
 
-    app.setUserInfo();
+    app.updateLocalUserInfo();
   }
 });

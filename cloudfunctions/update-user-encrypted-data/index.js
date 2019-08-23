@@ -61,6 +61,10 @@ exports.main = async event => {
         code: 1
       };
     }
+
+    user.phoneNumber = data.phoneNumber;
+    user.countryCode = data.countryCode;
+    user.expireTime = expireTime;
   } catch (e) {
     return {
       message: e.message,
@@ -72,8 +76,7 @@ exports.main = async event => {
     message: "success",
     code: 0,
     data: {
-      // ...event.user,
-      ...data
+      ...user
     }
   };
 };

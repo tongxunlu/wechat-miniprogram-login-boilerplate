@@ -7,7 +7,7 @@
     <view class='content'>
         <view>申请获取以下权限</view>
         <text wx:if="{{scope === 'userInfo'}}">获得你的公开信息(昵称、头像、地区和性别)</text>
-        <text wx:if="{{scope === 'phoneNumber'}}">获得你的手机号码</text>
+        <text wx:if="{{scope === 'phoneNumber'}}">申请获取你微信绑定的手机号</text>
     </view>
 
     <button wx:if="{{scope === 'userInfo'}}" class='bottom' type='primary' open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="bindGetUserInfo">
