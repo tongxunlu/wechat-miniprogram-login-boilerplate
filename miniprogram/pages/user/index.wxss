@@ -21,6 +21,7 @@
     display: block;
     color: #9d9d9d;
     margin-top: 40rpx;
+    font-size: 26rpx;
 }
 
 .bottom {

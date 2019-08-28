@@ -1,15 +1,12 @@
 const cloud = require("wx-server-sdk");
-const duration = 24 * 3600 * 1000; // 开发侧控制登录态有效时间
 
 cloud.init();
 
-// 云函数入口函数
+/**
+input: event.user 传入的用户信息
+*/
 exports.main = async event => {
-  const {
-    ENV,
-    OPENID,
-    APPID
-  } = cloud.getWXContext();
+  const { ENV, OPENID, UNIONID, APPID } = cloud.getWXContext();
   // 更新默认配置，将默认访问环境设为当前云函数所在环境
   cloud.updateConfig({
     env: ENV
@@ -19,9 +16,11 @@ exports.main = async event => {
   const users = await db
     .collection("users")
     .where({
-      _openid: OPENID
+      openid: OPENID
     })
     .get();
+
+  console.log("[INPUT: event.user] " + JSON.stringify(event.user));
 
   if (!users.data.length) {
     return {
@@ -32,19 +31,16 @@ exports.main = async event => {
 
   // 进行数据解密
   const user = users.data[0];
-  const expireTime = Date.now() + duration;
 
   try {
-    // 将用户数据和手机号码数据更新到该用户数据中
     const result = await db
       .collection("users")
       .where({
-        _openid: OPENID
+        openid: OPENID
       })
       .update({
         data: {
-          ...event.user,
-          expireTime
+          ...event.user
         }
       });
 
@@ -65,8 +61,7 @@ exports.main = async event => {
     message: "success",
     code: 0,
     data: {
-      ...event.user,
-      expireTime
+      ...event.user
     }
   };
 };

@@ -1,4 +1,5 @@
 // eslint-disable-next-line no-unused-vars
+import auth from "../../util/auth";
 
 const app = getApp();
 
@@ -6,8 +7,9 @@ Page({
   db: null, // db instance
   data: {
     canIUse: wx.canIUse("button.open-type.getUserInfo"),
-    // scope: "userInfo"
-    scope: "phoneNumber"
+    isValidSession: false,
+    hasUserInfo: false,
+    hasPhoneNumber: false
   },
 
   /**
@@ -17,13 +19,18 @@ Page({
     this.db = wx.cloud.database();
 
     try {
-      var userInfo = wx.getStorageSync('userInfo')
-      if (userInfo && userInfo._openid) {
-        // Do something with return value
-      }
+      this.updateData();
     } catch (e) {
       // Do something when catch error
     }
+  },
+
+  updateData() {
+    var userInfo = wx.getStorageSync("userInfo");
+    var isValidSession = wx.getStorageSync("isValidSession");
+    var hasUserInfo = wx.getStorageSync("hasUserInfo");
+    var hasPhoneNumber = wx.getStorageSync("hasPhoneNumber");
+    this.setData({ userInfo, isValidSession, hasUserInfo, hasPhoneNumber });
   },
 
   // 手动获取用户数据
@@ -43,8 +50,8 @@ Page({
       });
       wx.hideLoading();
       console.log(result);
-      app.updateLocalUserInfo(userInfo);
-      //TODO: 成功的逻辑
+      await auth.getUserInfo();
+      this.updateData();
     } else {
       //用户按了拒绝按钮
       wx.showModal({
@@ -72,7 +79,7 @@ Page({
     });
 
     try {
-      const result = await wx.cloud.callFunction({
+      let result = await wx.cloud.callFunction({
         name: "update-user-encrypted-data",
         data: {
           encryptedData: e.detail.encryptedData,
@@ -82,7 +89,8 @@ Page({
       console.log(result);
 
       if (!result.result.code && result.result.data) {
-        app.updateLocalUserInfo(result.result.data);
+        await auth.getUserInfo();
+        this.updateData();
       }
 
       wx.hideLoading();
@@ -93,21 +101,5 @@ Page({
         icon: "none"
       });
     }
-  },
-
-  // 退出登录
-  async bindLogout() {
-    const userInfo = this.data.userInfo;
-
-    await this.db
-      .collection("users")
-      .doc(userInfo._id)
-      .update({
-        data: {
-          expireTime: 0
-        }
-      });
-
-    app.updateLocalUserInfo();
   }
 });

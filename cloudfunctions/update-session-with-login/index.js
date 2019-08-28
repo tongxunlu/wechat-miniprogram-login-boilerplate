@@ -3,19 +3,13 @@ const { WXMINIUser } = require("wx-js-utils");
 
 const secret = "fbe846dbad32cd4c47ac736efc7f5aee";
 
-const duration = 24 * 3600 * 1000;
-
 cloud.init();
 
 // 云函数入口函数
 exports.main = async event => {
   console.log(event);
 
-  const {
-    ENV,
-    OPENID,
-    APPID //wx70f790e831bd24f5
-  } = cloud.getWXContext();
+  const { ENV, OPENID, UNIONID, APPID } = cloud.getWXContext();
   // 更新默认配置，将默认访问环境设为当前云函数所在环境
   cloud.updateConfig({
     env: ENV
@@ -39,11 +33,9 @@ exports.main = async event => {
     const user = await db
       .collection("users")
       .where({
-        _openid: OPENID
+        openid: OPENID
       })
       .get();
-
-    const expireTime = Date.now() + duration;
 
     // 如果有数据，则只是更新 `session_key`，如果没数据则添加该用户并插入 `sesison_key`
     if (user.data.length) {
@@ -51,21 +43,21 @@ exports.main = async event => {
       await db
         .collection("users")
         .where({
-          _openid: OPENID
+          openid: OPENID
         })
         .update({
           data: {
-            session_key: info.session_key,
-            expireTime: expireTime
+            // session_key: info.session_key,
+            ...info
           }
         });
     } else {
       console.log("[add new session]");
       await db.collection("users").add({
         data: {
-          session_key: info.session_key,
-          _openid: OPENID,
-          expireTime: expireTime
+          // session_key: info.session_key,
+          // openid: OPENID,
+          ...info
         }
       });
     }
