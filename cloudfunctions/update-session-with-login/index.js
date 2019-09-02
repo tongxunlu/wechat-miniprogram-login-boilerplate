@@ -1,8 +1,6 @@
 const cloud = require("wx-server-sdk");
 const { WXMINIUser } = require("wx-js-utils");
 
-const secret = "fbe846dbad32cd4c47ac736efc7f5aee";
-
 cloud.init();
 
 // 云函数入口函数
@@ -19,7 +17,7 @@ exports.main = async event => {
 
   const wXMINIUser = new WXMINIUser({
     appId: APPID,
-    secret
+    secret: process.env.secret
   });
 
   const code = event.code; // 从小程序端的 wx.login 接口传过来的 code 值
