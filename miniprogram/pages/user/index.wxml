@@ -1,67 +1,32 @@
 
 <view wx:if="{{canIUse}}">
-    <view class='header'>
-        <image src='/images/logo.png'></image>
-    </view>
-
-    <button open-type="openSetting" type="default">通过open-data获取userInfo</button>
-    <view>
-      <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
-        <open-data class="avatar-img" type="userAvatarUrl" lang="zh_CN"></open-data>
-      </view>
-      <form>
-        <view class="page-section">
-          <view class="weui-cells weui-cells_after-title">
-            <view class="weui-cell weui-cell_input">
-              <view class="weui-cell__hd">
-                <view class="weui-label">昵称</view>
-              </view>
-              <view class="weui-cell__bd">
-                <view class="weui-input">
-                  <open-data type="userNickName" lang="zh_CN"></open-data>
-                </view>
-              </view>
+    <view class="weui-article">
+        <view class="weui-article__section">
+            <view class="weui-article__h3">显示用户信息的两种方式</view>
+            <view class="weui-article__p">
+                如果只是在页面上显示用户昵称性别等信息，可以通过open-data的方式直接显示，如果需要更复杂的使用逻辑，则需要通过用户授权获取用户信息。对于手机号、地理位置等敏感信息，则需要用户额外授权。
             </view>
-
-            <view class="weui-cell weui-cell_input">
-              <view class="weui-cell__hd">
-                <view class="weui-label">性别</view>
-              </view>
-              <view class="weui-cell__bd">
-                <view class="weui-input">
-                  <open-data type="userGender" lang="zh_CN"></open-data>
-                </view>
-              </view>
-            </view>
-
-            <view class="weui-cell weui-cell_input">
-              <view class="weui-cell__hd">
-                <view class="weui-label">地区</view>
-              </view>
-              <view class="weui-cell__bd">
-                <view class="weui-input">
-                  <open-data class="country" type="userCountry" lang="zh_CN"></open-data>
-                  <open-data class="province" type="userProvince" lang="zh_CN"></open-data>
-                  <open-data class="city" type="userCity" lang="zh_CN"></open-data>
-                </view>
-              </view>
-            </view>
-
-
-            <view class="weui-cell weui-cell_input">
-              <view class="weui-cell__hd">
-                <view class="weui-label">语言</view>
-              </view>
-              <view class="weui-cell__bd">
-                <view class="weui-input">
-                  <open-data type="userLanguage" lang="zh_CN"></open-data>
-                </view>
-              </view>
-            </view>
-          </view>
         </view>
-      </form>
+    </view>
+    <button open-type="openSetting" type="default">通过open-data获取userInfo</button>
 
+    <view class="weui-panel weui-panel_access">
+        <view class="weui-panel__bd">
+            <navigator url="" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
+                <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
+                    <open-data class="avatar-img" type="userAvatarUrl" lang="zh_CN"></open-data>
+                </view>
+                <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                    <view class="weui-media-box__title"><open-data type="userNickName" lang="zh_CN"></open-data></view>
+                    <view class="weui-media-box__desc">性别:<open-data type="userGender" lang="zh_CN"></open-data></view>
+
+                    <view class="weui-media-box__desc">地区:<open-data class="country" type="userCountry" lang="zh_CN"></open-data>
+                    <open-data class="province" type="userProvince" lang="zh_CN"></open-data>
+                    <open-data class="city" type="userCity" lang="zh_CN"></open-data></view>
+                </view>
+            </navigator>
+
+        </view>
     </view>
 
     <button open-type="openSetting" type="default">通过用户授权获取userInfo</button>
