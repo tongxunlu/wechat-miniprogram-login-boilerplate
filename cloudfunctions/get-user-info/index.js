@@ -1,4 +1,4 @@
-const cloud = require("wx-server-sdk");
+const cloud = require('wx-server-sdk');
 
 cloud.init();
 
@@ -7,7 +7,7 @@ exports.main = async event => {
   const { ENV, OPENID, UNIONID, APPID } = cloud.getWXContext();
   // 更新默认配置，将默认访问环境设为当前云函数所在环境
   cloud.updateConfig({
-    env: ENV
+    env: ENV,
   });
 
   const db = cloud.database();
@@ -15,9 +15,9 @@ exports.main = async event => {
   try {
     // 查询有没用户数据
     const result = await db
-      .collection("users")
+      .collection('users')
       .where({
-        openid: OPENID
+        openid: OPENID,
       })
       .get();
 
@@ -25,7 +25,7 @@ exports.main = async event => {
   } catch (e) {
     return {
       message: e.message,
-      code: 1
+      code: 1,
     };
   }
 };
