@@ -17,7 +17,7 @@
 
 ## 运行效果
 
-![demo]("./demo.gif")
+![demo](demo.gif)
 
 ## 详情请参考：
 
