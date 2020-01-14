@@ -1,5 +1,28 @@
 let auth = {
-  // 设置用户数据
+  //根据用户的openid获取数据库中相关的用户信息
+  getUserInfo: async function(cb) {
+    let that = this;
+    try {
+      const resp = await wx.cloud.callFunction({
+        name: 'get-user-info',
+      });
+      const user = resp.result;
+      if (user) {
+        this.updateLocalUserInfo(user);
+        typeof cb == 'function' && cb();
+      } else {
+        this.clearLocalStorage();
+        // 强制更新并新增了用户
+        this.updateSessionWithLogin();
+      }
+
+      return user;
+    } catch (e) {
+      console.log(e);
+    }
+  },
+
+  // 保存从数据库中获得的用户信息到本地的local storage.
   updateLocalUserInfo: function(userInfo = {}) {
     // 去掉敏感信息 session_key
     if (Object.prototype.hasOwnProperty.call(userInfo, 'session_key')) {
@@ -26,12 +49,17 @@ let auth = {
       }
     } catch (e) {}
   },
-
-  updateSessionWithLogin: async function() {
+  //清空本地local storage里保存的信息
+  clearLocalStorage: function() {
+    try {
+      wx.clearStorage();
+    } catch (e) {}
+  },
+  //调用wx.login获取用户信息并保存到数据库中
+  updateSessionWithLogin: async function(cb) {
     let that = this;
     wx.login({
       success: async res => {
-        console.log(res);
         try {
           await wx.cloud.callFunction({
             name: 'update-session-with-login',
@@ -42,39 +70,18 @@ let auth = {
         } catch (e) {
           console.log(e);
         }
-        await this.getUserInfo();
+        await this.getUserInfo(cb);
       },
     });
   },
-
-  getUserInfo: async function() {
-    let that = this;
-    try {
-      const resp = await wx.cloud.callFunction({
-        name: 'get-user-info',
-      });
-      const user = resp.result;
-      if (user) {
-        this.updateLocalUserInfo(user);
-      } else {
-        this.updateLocalUserInfo();
-        // 强制更新并新增了用户
-        this.updateSessionWithLogin();
-      }
-
-      return user;
-    } catch (e) {
-      console.log(e);
-    }
-  },
-
+  //更新已有用户的信息到数据库中
   updateUserInfo: async function(e, callback) {
     let that = this;
     if (e.detail.userInfo) {
       //用户按了允许授权按钮或者之前已经授权过
       const userInfo = e.detail.userInfo;
       wx.showLoading({
-        title: '正在获取',
+        title: '正在获取...',
       });
       const result = await wx.cloud.callFunction({
         name: 'update-user-info',
@@ -83,10 +90,14 @@ let auth = {
         },
       });
 
-      console.log(result);
       if (result.result.code === 0) {
-        let user = await that.getUserInfo();
-        callback(user);
+        await that.getUserInfo(callback);
+      } else {
+        wx.hideLoading();
+        wx.showToast({
+          title: result.result.message,
+          icon: 'none',
+        });
       }
 
       wx.hideLoading();
@@ -113,7 +124,7 @@ let auth = {
       return;
     }
     wx.showLoading({
-      title: '正在获取',
+      title: '正在获取...',
     });
 
     try {
@@ -124,11 +135,9 @@ let auth = {
           iv: e.detail.iv,
         },
       });
-      console.log(result);
 
       if (result.result.code === 0) {
-        let user = await that.getUserInfo();
-        callback(user);
+        await that.getUserInfo(callback);
       }
 
       wx.hideLoading();
@@ -136,6 +145,30 @@ let auth = {
       wx.hideLoading();
       wx.showToast({
         title: '获取手机号码失败，请重试',
+        icon: 'none',
+      });
+    }
+  },
+
+  deleteUserInfo: async function(cb) {
+    wx.showLoading({
+      title: '正在删除...',
+    });
+    try {
+      await wx.cloud.callFunction({
+        name: 'delete-user-info',
+      });
+      this.clearLocalStorage();
+      typeof cb == 'function' && cb();
+      wx.hideLoading();
+      wx.showToast({
+        title: '删除成功',
+        icon: 'none',
+      });
+    } catch (e) {
+      wx.hideLoading();
+      wx.showToast({
+        title: '删除失败',
         icon: 'none',
       });
     }
