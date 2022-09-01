@@ -1,4 +1,5 @@
 ## wiki 栏目有几篇文章流程看懂就差不多了，不用再到处搜索文章
+## 作者项目已经更新(https://github.com/jiji262/miniprogram-starter) 2022-09-01
 ## Usage
 
 ### 导入项目
